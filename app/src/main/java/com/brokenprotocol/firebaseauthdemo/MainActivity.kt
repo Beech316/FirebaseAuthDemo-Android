@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +64,12 @@ fun MainScreen() {
     
     // Create shared AuthViewModel instance using Hilt
     val authViewModel: AuthViewModel = hiltViewModel()
+    
+    // Initialize session on app start
+    LaunchedEffect(Unit) {
+        // Session initialization is handled in AuthViewModel.init()
+        // This ensures the session is checked when the app starts
+    }
     
     val tabs = listOf(
         Triple("Explore", Icons.Default.Home, NavRoutes.Explore.route),
