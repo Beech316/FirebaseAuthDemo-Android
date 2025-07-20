@@ -42,9 +42,9 @@ fun AuthTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    modifier: Modifier = Modifier,
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    modifier: Modifier = Modifier,
     isError: Boolean = false,
     errorMessage: String? = null
 ) {
@@ -92,9 +92,9 @@ fun AuthTextField(
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,
@@ -118,8 +118,8 @@ fun PrimaryButton(
  */
 @Composable
 fun LoadingSpinner(
-    message: String = "Loading...",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    message: String = "Loading..."
 ) {
     Column(
         modifier = modifier,

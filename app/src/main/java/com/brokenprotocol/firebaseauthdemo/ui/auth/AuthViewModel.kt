@@ -146,6 +146,65 @@ class AuthViewModel @Inject constructor(
         }
     }
     
+    fun registerUser(
+        email: String,
+        password: String,
+        username: String = "",
+        firstName: String = "",
+        lastName: String = ""
+    ) {
+        if (email.isEmpty() || password.isEmpty()) {
+            _authState.value = AuthState.Error("Please enter email and password")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                // Register with Django first (Django creates user in both Django DB and Firebase)
+                val djangoResponse = djangoApiService.registerUser(
+                    email = email,
+                    password = password,
+                    username = username,
+                    firstName = firstName,
+                    lastName = lastName
+                )
+                
+                if (djangoResponse.success) {
+                    // Django created the user in Firebase, now sign in to get the session
+                    val firebaseResult = firebaseApiService.signInWithEmailAndPassword(email, password)
+                    
+                    if (firebaseResult.success && firebaseResult.idToken != null) {
+                        // Create AuthUser from successful response
+                        val user = AuthUser(
+                            email = firebaseResult.user?.email ?: email,
+                            firebaseUid = firebaseResult.user?.uid ?: "",
+                            username = firebaseResult.user?.displayName ?: username,
+                            isEmailVerified = firebaseResult.user?.isEmailVerified ?: false
+                        )
+                        
+                        // Store Django session data
+                        val expiryTimestamp = System.currentTimeMillis() + (24 * 60 * 60 * 1000) // 24 hours
+                        secureStorage.storeUserEmail(user.email)
+                        secureStorage.storeTokenExpiry(expiryTimestamp)
+                        secureStorage.storeDjangoToken(firebaseResult.idToken)
+                        
+                        // Update ViewModel state
+                        _currentUser.value = user
+                        _authState.value = AuthState.Success(user)
+                    } else {
+                        _authState.value = AuthState.Error("Firebase sign in failed after registration: ${firebaseResult.error}")
+                    }
+                } else {
+                    _authState.value = AuthState.Error("Registration failed: ${djangoResponse.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Registration error: ${e.message}")
+            }
+        }
+    }
+    
     fun signOut() {
         viewModelScope.launch {
             try {

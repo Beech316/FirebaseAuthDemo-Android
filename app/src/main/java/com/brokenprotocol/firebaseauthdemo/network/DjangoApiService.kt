@@ -42,4 +42,47 @@ class DjangoApiService(
             )
         }
     }
+    
+    suspend fun registerUser(
+        email: String,
+        password: String,
+        username: String = "",
+        firstName: String = "",
+        lastName: String = ""
+    ): DjangoResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = RegisterRequest(
+                email = email,
+                password = password,
+                username = username,
+                first_name = firstName,
+                last_name = lastName
+            )
+            val response = apiInterface.registerUser(request)
+            
+            if (response.isSuccessful) {
+                val body = response.body()
+                DjangoResponse(
+                    success = true,
+                    responseCode = response.code(),
+                    responseBody = body?.toString() ?: "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                DjangoResponse(
+                    success = false,
+                    responseCode = response.code(),
+                    responseBody = errorBody,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            DjangoResponse(
+                success = false,
+                responseCode = -1,
+                responseBody = "",
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
 } 

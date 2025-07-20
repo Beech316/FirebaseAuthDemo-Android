@@ -35,6 +35,7 @@ import com.brokenprotocol.firebaseauthdemo.ui.explore.ExploreScreen
 import com.brokenprotocol.firebaseauthdemo.ui.profile.ProfileScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.SignInScreen
+import com.brokenprotocol.firebaseauthdemo.ui.auth.SignUpScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthViewModel
 import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import dagger.hilt.android.AndroidEntryPoint
@@ -130,8 +131,14 @@ fun MainScreen() {
                 )
             }
             composable(NavRoutes.SignUp.route) {
-                // TODO: Implement SignUpScreen
-                Text("Sign Up Screen - Coming Soon!")
+                SignUpScreen(
+                    modifier = Modifier,
+                    navController = navController,
+                    onNavigateToHome = {
+                        selectedTab = 0 // Navigate to Explore tab after sign up
+                    },
+                    viewModel = authViewModel
+                )
             }
         }
     }

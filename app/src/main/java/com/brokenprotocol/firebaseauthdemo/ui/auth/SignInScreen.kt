@@ -2,11 +2,16 @@ package com.brokenprotocol.firebaseauthdemo.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthHeader
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthKeyboardOptions
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthTextField
@@ -121,6 +127,23 @@ fun SignInScreen(
                 else -> {
                     // Initial state - no message needed
                 }
+            }
+        }
+
+        // Sign Up link
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Don't have an account?",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            TextButton(onClick = { navController.navigate(NavRoutes.SignUp.route) }) {
+                Text(text = "Sign Up")
             }
         }
     }

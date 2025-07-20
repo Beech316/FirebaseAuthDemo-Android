@@ -8,6 +8,14 @@ data class TokenRequest(
     val id_token: String
 )
 
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val username: String = "",
+    val first_name: String = "",
+    val last_name: String = ""
+)
+
 data class DjangoApiResponse(
     val success: Boolean,
     val user_id: Int? = null,
@@ -21,4 +29,7 @@ data class DjangoApiResponse(
 interface DjangoApiInterface {
     @POST("auth/verify-token/")
     suspend fun verifyFirebaseToken(@Body request: TokenRequest): Response<DjangoApiResponse>
+    
+    @POST("auth/register/")
+    suspend fun registerUser(@Body request: RegisterRequest): Response<DjangoApiResponse>
 } 
