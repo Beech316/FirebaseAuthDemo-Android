@@ -2,11 +2,6 @@ package com.brokenprotocol.firebaseauthdemo.network
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 data class DjangoResponse(
     val success: Boolean,
@@ -15,31 +10,9 @@ data class DjangoResponse(
     val error: String? = null
 )
 
-class DjangoApiService {
-    companion object {
-        private const val BASE_URL = "http://192.168.0.14:8000/"
-    }
-    
-    private val apiInterface: DjangoApiInterface by lazy {
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-        
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
-        
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(DjangoApiInterface::class.java)
-    }
-    
+class DjangoApiService(
+    private val apiInterface: DjangoApiInterface
+) {
     suspend fun verifyFirebaseToken(idToken: String): DjangoResponse = withContext(Dispatchers.IO) {
         try {
             val request = TokenRequest(id_token = idToken)
