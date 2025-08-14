@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brokenprotocol.firebaseauthdemo.network.DjangoApiService
 import com.brokenprotocol.firebaseauthdemo.network.FirebaseApiService
+import com.brokenprotocol.firebaseauthdemo.network.UserProfileData
 import com.brokenprotocol.firebaseauthdemo.security.SimpleSecureStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,9 @@ class AuthViewModel @Inject constructor(
     
     private val _currentUser = MutableStateFlow<AuthUser?>(null)
     val currentUser: StateFlow<AuthUser?> = _currentUser.asStateFlow()
+    
+    private val _userProfileData = MutableStateFlow<UserProfileData?>(null)
+    val userProfileData: StateFlow<UserProfileData?> = _userProfileData.asStateFlow()
     
     init {
         // Check Firebase session (handled automatically by Firebase)
@@ -48,7 +52,7 @@ class AuthViewModel @Inject constructor(
             
             // Check if we have a valid Django session
             if (secureStorage.hasValidDjangoSession()) {
-                _authState.value = AuthState.Success(user)
+                _authState.value = AuthState.Success(user = user)
             } else {
                 // Need to verify with Django - launch in coroutine
                 viewModelScope.launch {
@@ -85,7 +89,7 @@ class AuthViewModel @Inject constructor(
                 // since Django just verifies the Firebase token
                 secureStorage.storeDjangoToken(firebaseToken)
                 
-                _authState.value = AuthState.Success(_currentUser.value!!)
+                _authState.value = AuthState.Success(user = _currentUser.value!!)
             } else {
                 _authState.value = AuthState.Error("Django verification failed: ${response.error}")
             }
@@ -131,14 +135,22 @@ class AuthViewModel @Inject constructor(
                         
                         // Update ViewModel state
                         _currentUser.value = user
-                        _authState.value = AuthState.Success(user)
+                        _authState.value = AuthState.Success(user = user)
                     } else {
                         _authState.value = AuthState.Error(
-                            "Django Error: ${djangoResponse.error ?: djangoResponse.responseBody}"
+                            "Django Error: ${djangoResponse.error ?: "Unknown error"}"
                         )
                     }
                 } else {
-                    _authState.value = AuthState.Error("Firebase auth failed: ${firebaseResult.error}")
+                    // Handle specific Firebase error cases
+                    if (firebaseResult.requiresEmailVerification) {
+                        _authState.value = AuthState.Error(
+                            "Please verify your email address before signing in. Check your inbox for a verification link.",
+                            code = 17007
+                        )
+                    } else {
+                        _authState.value = AuthState.Error("Firebase auth failed: ${firebaseResult.error}")
+                    }
                 }
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Error: ${e.message}")
@@ -146,7 +158,7 @@ class AuthViewModel @Inject constructor(
         }
     }
     
-    fun registerUser(
+    fun signUpUser(
         email: String,
         password: String,
         username: String = "",
@@ -192,7 +204,7 @@ class AuthViewModel @Inject constructor(
                         
                         // Update ViewModel state
                         _currentUser.value = user
-                        _authState.value = AuthState.Success(user)
+                        _authState.value = AuthState.Success(user = user)
                     } else {
                         _authState.value = AuthState.Error("Firebase sign in failed after registration: ${firebaseResult.error}")
                     }
@@ -250,6 +262,170 @@ class AuthViewModel @Inject constructor(
     fun clearError() {
         if (_authState.value is AuthState.Error) {
             _authState.value = AuthState.Initial
+        }
+    }
+    
+    fun forgotPassword(email: String) {
+        if (email.isEmpty()) {
+            _authState.value = AuthState.Error("Please enter your email address")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.forgotPassword(email)
+                
+                if (response.success) {
+                    _authState.value = AuthState.Success(null, "Password reset email sent successfully")
+                } else {
+                    _authState.value = AuthState.Error("Failed to send password reset email: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
+        }
+    }
+    
+    fun checkEmailVerification(firebaseUid: String) {
+        if (firebaseUid.isEmpty()) {
+            _authState.value = AuthState.Error("No Firebase UID available")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.checkEmailVerification(firebaseUid)
+                
+                if (response.success) {
+                    // Parse the response to get email verification status
+                    // The response body contains the verification status
+                    _authState.value = AuthState.Success(null, "Email verification status checked")
+                } else {
+                    _authState.value = AuthState.Error("Failed to check email verification: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
+        }
+    }
+    
+    fun resendVerificationEmail(email: String) {
+        if (email.isEmpty()) {
+            _authState.value = AuthState.Error("Please enter your email address")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.resendVerificationEmail(email)
+                
+                if (response.success) {
+                    _authState.value = AuthState.Success(null, "Verification email sent successfully")
+                } else {
+                    _authState.value = AuthState.Error("Failed to send verification email: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
+        }
+    }
+    
+    fun getUserProfile(firebaseUid: String) {
+        if (firebaseUid.isEmpty()) {
+            _authState.value = AuthState.Error("No Firebase UID available")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.getUserProfile(firebaseUid)
+                
+                if (response.success && response.user != null) {
+                    _userProfileData.value = response.user
+                    _authState.value = AuthState.Success(null, "User profile loaded successfully")
+                } else {
+                    _authState.value = AuthState.Error("Failed to load user profile: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
+        }
+    }
+    
+    fun updateProfile(
+        firebaseUid: String,
+        username: String?,
+        firstName: String?,
+        lastName: String?,
+        phoneNumber: String?
+    ) {
+        if (firebaseUid.isEmpty()) {
+            _authState.value = AuthState.Error("No Firebase UID available")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.updateUserProfile(
+                    firebaseUid = firebaseUid,
+                    username = username,
+                    firstName = firstName,
+                    lastName = lastName,
+                    phoneNumber = phoneNumber
+                )
+                
+                if (response.success && response.user != null) {
+                    // Update the stored user profile data
+                    _userProfileData.value = response.user
+                    _authState.value = AuthState.Success(null, "Profile updated successfully")
+                } else {
+                    _authState.value = AuthState.Error("Failed to update profile: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
+        }
+    }
+    
+    fun deleteAccount(firebaseUid: String) {
+        if (firebaseUid.isEmpty()) {
+            _authState.value = AuthState.Error("No Firebase UID available")
+            return
+        }
+        
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                
+                val response = djangoApiService.deleteAccount(firebaseUid)
+                
+                if (response.success) {
+                    // Clear local user data
+                    _currentUser.value = null
+                    _userProfileData.value = null
+                    _authState.value = AuthState.Success(null, "Account deleted successfully")
+                    
+                    // Sign out from Firebase
+                    firebaseApiService.signOut()
+                    
+                    // Clear secure storage
+                    secureStorage.clearAllData()
+                } else {
+                    _authState.value = AuthState.Error("Failed to delete account: ${response.error}")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error: ${e.message}")
+            }
         }
     }
     

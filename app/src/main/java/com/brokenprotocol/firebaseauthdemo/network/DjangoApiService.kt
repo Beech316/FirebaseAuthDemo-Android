@@ -3,41 +3,28 @@ package com.brokenprotocol.firebaseauthdemo.network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-data class DjangoResponse(
-    val success: Boolean,
-    val responseCode: Int,
-    val responseBody: String,
-    val error: String? = null
-)
-
 class DjangoApiService(
     private val apiInterface: DjangoApiInterface
 ) {
-    suspend fun verifyFirebaseToken(idToken: String): DjangoResponse = withContext(Dispatchers.IO) {
+    suspend fun verifyFirebaseToken(idToken: String): VerifyTokenResponse = withContext(Dispatchers.IO) {
         try {
             val request = TokenRequest(id_token = idToken)
             val response = apiInterface.verifyFirebaseToken(request)
             
             if (response.isSuccessful) {
-                val body = response.body()
-                DjangoResponse(
-                    success = true,
-                    responseCode = response.code(),
-                    responseBody = body?.toString() ?: "Empty response body"
+                response.body() ?: VerifyTokenResponse(
+                    success = false,
+                    error = "Empty response body"
                 )
             } else {
-                DjangoResponse(
+                VerifyTokenResponse(
                     success = false,
-                    responseCode = response.code(),
-                    responseBody = response.errorBody()?.string() ?: "Unknown error",
                     error = "HTTP ${response.code()}: ${response.message()}"
                 )
             }
         } catch (e: Exception) {
-            DjangoResponse(
+            VerifyTokenResponse(
                 success = false,
-                responseCode = -1,
-                responseBody = "",
                 error = "Network error: ${e.message}"
             )
         }
@@ -49,7 +36,7 @@ class DjangoApiService(
         username: String = "",
         firstName: String = "",
         lastName: String = ""
-    ): DjangoResponse = withContext(Dispatchers.IO) {
+    ): RegisterResponse = withContext(Dispatchers.IO) {
         try {
             val request = RegisterRequest(
                 email = email,
@@ -61,26 +48,181 @@ class DjangoApiService(
             val response = apiInterface.registerUser(request)
             
             if (response.isSuccessful) {
-                val body = response.body()
-                DjangoResponse(
-                    success = true,
-                    responseCode = response.code(),
-                    responseBody = body?.toString() ?: "Empty response body"
+                response.body() ?: RegisterResponse(
+                    success = false,
+                    error = "Empty response body"
                 )
             } else {
                 val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                DjangoResponse(
+                RegisterResponse(
                     success = false,
-                    responseCode = response.code(),
-                    responseBody = errorBody,
                     error = "HTTP ${response.code()}: $errorBody"
                 )
             }
         } catch (e: Exception) {
-            DjangoResponse(
+            RegisterResponse(
                 success = false,
-                responseCode = -1,
-                responseBody = "",
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun forgotPassword(email: String): ForgotPasswordResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = ForgotPasswordRequest(email = email)
+            val response = apiInterface.forgotPassword(request)
+            
+            if (response.isSuccessful) {
+                response.body() ?: ForgotPasswordResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                ForgotPasswordResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            ForgotPasswordResponse(
+                success = false,
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun checkEmailVerification(firebaseUid: String): EmailVerificationResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = CheckEmailVerificationRequest(firebase_uid = firebaseUid)
+            val response = apiInterface.checkEmailVerification(request)
+            
+            if (response.isSuccessful) {
+                response.body() ?: EmailVerificationResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                EmailVerificationResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            EmailVerificationResponse(
+                success = false,
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun resendVerificationEmail(email: String): ResendVerificationResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = ResendVerificationEmailRequest(email = email)
+            val response = apiInterface.resendVerificationEmail(request)
+            
+            if (response.isSuccessful) {
+                response.body() ?: ResendVerificationResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                ResendVerificationResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            ResendVerificationResponse(
+                success = false,
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun getUserProfile(firebaseUid: String): UserProfileResponse = withContext(Dispatchers.IO) {
+        try {
+            val response = apiInterface.getUserProfile(firebaseUid)
+            
+            if (response.isSuccessful) {
+                response.body() ?: UserProfileResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                UserProfileResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            UserProfileResponse(
+                success = false,
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun updateUserProfile(
+        firebaseUid: String,
+        username: String?,
+        firstName: String?,
+        lastName: String?,
+        phoneNumber: String?
+    ): UserProfileResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = UpdateProfileRequest(
+                firebase_uid = firebaseUid,
+                username = username,
+                first_name = firstName,
+                last_name = lastName,
+                phone_number = phoneNumber
+            )
+            val response = apiInterface.updateUserProfile(request)
+            
+            if (response.isSuccessful) {
+                response.body() ?: UserProfileResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                UserProfileResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            UserProfileResponse(
+                success = false,
+                error = "Network error: ${e.message}"
+            )
+        }
+    }
+    
+    suspend fun deleteAccount(firebaseUid: String): DeleteAccountResponse = withContext(Dispatchers.IO) {
+        try {
+            val request = DeleteAccountRequest(firebase_uid = firebaseUid)
+            val response = apiInterface.deleteAccount(request)
+            
+            if (response.isSuccessful) {
+                response.body() ?: DeleteAccountResponse(
+                    success = false,
+                    error = "Empty response body"
+                )
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                DeleteAccountResponse(
+                    success = false,
+                    error = "HTTP ${response.code()}: $errorBody"
+                )
+            }
+        } catch (e: Exception) {
+            DeleteAccountResponse(
+                success = false,
                 error = "Network error: ${e.message}"
             )
         }

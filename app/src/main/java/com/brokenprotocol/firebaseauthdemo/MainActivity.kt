@@ -33,9 +33,12 @@ import androidx.navigation.compose.rememberNavController
 import com.brokenprotocol.firebaseauthdemo.ui.theme.FirebaseAuthDemoTheme
 import com.brokenprotocol.firebaseauthdemo.ui.explore.ExploreScreen
 import com.brokenprotocol.firebaseauthdemo.ui.profile.ProfileScreen
+import com.brokenprotocol.firebaseauthdemo.ui.profile.EditProfileScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.SignInScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.SignUpScreen
+import com.brokenprotocol.firebaseauthdemo.ui.auth.ForgotPasswordScreen
+import com.brokenprotocol.firebaseauthdemo.ui.auth.EmailVerificationScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthViewModel
 import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,7 +117,11 @@ fun MainScreen() {
                 ExploreScreen(modifier = Modifier)
             }
             composable(NavRoutes.Profile.route) {
-                ProfileScreen(modifier = Modifier)
+                ProfileScreen(
+                    modifier = Modifier,
+                    navController = navController,
+                    viewModel = authViewModel
+                )
             }
             composable(NavRoutes.Auth.route) {
                 AuthScreen(
@@ -132,11 +139,30 @@ fun MainScreen() {
             }
             composable(NavRoutes.SignUp.route) {
                 SignUpScreen(
+                    onNavigateToSignIn = {
+                        // Navigate to SignIn screen
+                        navController.navigate(NavRoutes.SignIn.route)
+                    },
+                    viewModel = authViewModel
+                )
+            }
+            composable(NavRoutes.ForgotPassword.route) {
+                ForgotPasswordScreen(
                     modifier = Modifier,
                     navController = navController,
-                    onNavigateToHome = {
-                        selectedTab = 0 // Navigate to Explore tab after sign up
-                    },
+                    viewModel = authViewModel
+                )
+            }
+            composable(NavRoutes.EmailVerification.route) {
+                EmailVerificationScreen(
+                    modifier = Modifier,
+                    navController = navController,
+                    viewModel = authViewModel
+                )
+            }
+            composable(NavRoutes.EditProfile.route) {
+                EditProfileScreen(
+                    navController = navController,
                     viewModel = authViewModel
                 )
             }

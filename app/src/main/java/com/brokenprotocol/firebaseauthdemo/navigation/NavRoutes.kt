@@ -6,4 +6,7 @@ sealed class NavRoutes(val route: String) {
     object Auth : NavRoutes("auth")
     object SignIn : NavRoutes("signin")
     object SignUp : NavRoutes("signup")
+    object ForgotPassword : NavRoutes("forgotpassword")
+    object EmailVerification : NavRoutes("emailverification")
+    object EditProfile : NavRoutes("editprofile")
 } 

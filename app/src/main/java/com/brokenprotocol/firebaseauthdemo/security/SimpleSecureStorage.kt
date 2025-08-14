@@ -13,6 +13,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.core.content.edit
 
 /**
  * Simplified secure storage for Django token and user session state.
@@ -49,9 +50,9 @@ class SimpleSecureStorage @Inject constructor(
     fun storeDjangoToken(token: String): Boolean {
         return try {
             val encryptedToken = encrypt(token)
-            sharedPreferences.edit()
-                .putString(KEY_DJANGO_TOKEN, encryptedToken)
-                .apply()
+            sharedPreferences.edit {
+                putString(KEY_DJANGO_TOKEN, encryptedToken)
+            }
             true
         } catch (e: Exception) {
             false
@@ -76,9 +77,9 @@ class SimpleSecureStorage @Inject constructor(
     fun storeUserEmail(email: String): Boolean {
         return try {
             val encryptedEmail = encrypt(email)
-            sharedPreferences.edit()
-                .putString(KEY_USER_EMAIL, encryptedEmail)
-                .apply()
+            sharedPreferences.edit {
+                putString(KEY_USER_EMAIL, encryptedEmail)
+            }
             true
         } catch (e: Exception) {
             false
@@ -101,9 +102,9 @@ class SimpleSecureStorage @Inject constructor(
      * Store token expiry timestamp
      */
     fun storeTokenExpiry(timestamp: Long) {
-        sharedPreferences.edit()
-            .putLong(KEY_TOKEN_EXPIRY, timestamp)
-            .apply()
+        sharedPreferences.edit {
+            putLong(KEY_TOKEN_EXPIRY, timestamp)
+        }
     }
     
     /**
@@ -125,18 +126,18 @@ class SimpleSecureStorage @Inject constructor(
      * Clear all stored data
      */
     fun clearAllData() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit { clear() }
     }
     
     /**
      * Clear only Django-related data
      */
     fun clearDjangoData() {
-        sharedPreferences.edit()
-            .remove(KEY_DJANGO_TOKEN)
-            .remove(KEY_USER_EMAIL)
-            .remove(KEY_TOKEN_EXPIRY)
-            .apply()
+        sharedPreferences.edit {
+            remove(KEY_DJANGO_TOKEN)
+                .remove(KEY_USER_EMAIL)
+                .remove(KEY_TOKEN_EXPIRY)
+        }
     }
     
     /**

@@ -9,127 +9,135 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.brokenprotocol.firebaseauthdemo.ui.components.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.brokenprotocol.firebaseauthdemo.ui.components.PrimaryButton
 
 @Composable
 fun SignUpScreen(
-    modifier: Modifier = Modifier,
-    navController: NavController,
-    onNavigateToHome: () -> Unit,
-    viewModel: AuthViewModel
+    onNavigateToSignIn: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+
     val authState by viewModel.authState.collectAsState()
-    
+    val scrollState = rememberScrollState()
+
     LaunchedEffect(authState) {
-        if (authState is AuthState.Success) {
-            onNavigateToHome()
+        when (authState) {
+            is AuthState.Success -> {
+                // Navigate to main app or show success message
+            }
+            is AuthState.Error -> {
+                // Error is handled in the UI
+            }
+            else -> {}
         }
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        AuthHeader(
-            title = "Create Account",
-            onBackClick = { navController.popBackStack() }
+        Text(
+            text = "Create Account",
+            style = MaterialTheme.typography.headlineMedium
         )
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var confirmPassword by remember { mutableStateOf("") }
-        var username by remember { mutableStateOf("") }
-        var firstName by remember { mutableStateOf("") }
-        var lastName by remember { mutableStateOf("") }
-        
-        AuthTextField(
+
+        OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = "Email",
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
-            ),
+            )
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        AuthTextField(
+
+        OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = "Username",
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
-            ),
+            )
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
 
-        AuthTextField(
+        OutlinedTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = "First Name",
+            label = { Text("First Name") },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
-                capitalization = KeyboardCapitalization.Words
-            ),
+                imeAction = ImeAction.Next
+            )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        AuthTextField(
+        OutlinedTextField(
             value = lastName,
             onValueChange = { lastName = it },
-            label = "Last Name",
+            label = { Text("Last Name") },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
-                capitalization = KeyboardCapitalization.Words
-            ),
+                imeAction = ImeAction.Next
+            )
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        AuthTextField(
+
+        OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = "Password",
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next
-            ),
-            isPassword = true,
+            )
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        AuthTextField(
+
+        OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = "Confirm Password",
+            label = { Text("Confirm Password") },
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
-            ),
-            isPassword = true,
+            )
         )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
+
+        when (authState) {
+            is AuthState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is AuthState.Error -> {
+                Text(
+                    text = (authState as AuthState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            else -> {}
+        }
+
         PrimaryButton(
             onClick = {
                 if (password == confirmPassword) {
-                    viewModel.registerUser(
+                    viewModel.signUpUser(
                         email = email,
                         password = password,
                         username = username,
@@ -138,35 +146,19 @@ fun SignUpScreen(
                     )
                 }
             },
-            enabled = email.isNotBlank() && 
-                     password.isNotBlank() && 
-                     confirmPassword.isNotBlank() && 
-                     password == confirmPassword &&
-                    authState !is AuthState.Loading,
-            text = "Sign Up"
+            modifier = Modifier.fillMaxWidth(),
+            enabled = email.isNotBlank() && password.isNotBlank() &&
+                    confirmPassword.isNotBlank() && username.isNotBlank() &&
+                    firstName.isNotBlank() && lastName.isNotBlank() &&
+                    password == confirmPassword,
+            text = "Sign Up",
+            loading = false
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        if (authState is AuthState.Loading) {
-            LoadingSpinner()
-        }
-        
-        if (authState is AuthState.Error) {
-            ErrorMessage(
-                message = (authState as AuthState.Error).message,
-                onDismiss = { viewModel.clearError() }
-            )
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
+
         TextButton(
-            onClick = { navController.popBackStack() }
+            onClick = onNavigateToSignIn
         ) {
             Text("Already have an account? Sign In")
         }
-        
-        Spacer(modifier = Modifier.height(32.dp))
     }
 } 

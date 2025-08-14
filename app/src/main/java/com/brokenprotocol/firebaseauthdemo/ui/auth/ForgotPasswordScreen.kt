@@ -2,13 +2,11 @@ package com.brokenprotocol.firebaseauthdemo.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,9 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthHeader
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthKeyboardOptions
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthTextField
@@ -31,15 +29,13 @@ import com.brokenprotocol.firebaseauthdemo.ui.components.PrimaryButton
 import com.brokenprotocol.firebaseauthdemo.ui.components.SuccessMessage
 
 @Composable
-fun SignInScreen(
+fun ForgotPasswordScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: AuthViewModel
 ) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
     val authState by viewModel.authState.collectAsState()
     
     Column(
@@ -49,18 +45,25 @@ fun SignInScreen(
     ) {
         // Header with back button
         AuthHeader(
-            title = "Sign In",
+            title = "Forgot Password",
             onBackClick = { navController.popBackStack() }
         )
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // Sign in form
+        // Forgot password form
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "Enter your email address and we'll send you a link to reset your password.",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
+            
             AuthTextField(
                 value = email,
                 onValueChange = { 
@@ -73,56 +76,21 @@ fun SignInScreen(
                 errorMessage = emailError
             )
             
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            AuthTextField(
-                value = password,
-                onValueChange = { 
-                    password = it
-                    passwordError = null // Clear error when user types
-                },
-                label = "Password",
-                isPassword = true,
-                keyboardOptions = AuthKeyboardOptions.Password,
-                isError = passwordError != null,
-                errorMessage = passwordError
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // Forgot Password and Email Verification links
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextButton(
-                    onClick = { navController.navigate(NavRoutes.EmailVerification.route) }
-                ) {
-                    Text(text = "Verify Email")
-                }
-                
-                TextButton(
-                    onClick = { navController.navigate(NavRoutes.ForgotPassword.route) }
-                ) {
-                    Text(text = "Forgot Password?")
-                }
-            }
-            
             Spacer(modifier = Modifier.height(24.dp))
             
             PrimaryButton(
-                text = "Sign In",
+                text = "Send Reset Link",
                 onClick = { 
                     // Basic validation
                     if (email.isEmpty()) {
                         emailError = "Email is required"
                         return@PrimaryButton
                     }
-                    if (password.isEmpty()) {
-                        passwordError = "Password is required"
+                    if (!email.contains("@")) {
+                        emailError = "Please enter a valid email address"
                         return@PrimaryButton
                     }
-                    viewModel.signIn(email, password)
+                    viewModel.forgotPassword(email)
                 },
                 loading = authState is AuthState.Loading
             )
@@ -132,28 +100,17 @@ fun SignInScreen(
                 is AuthState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
                     SuccessMessage(
-                        message = "Sign in successful! Returning to main screen..."
+                        message = (authState as AuthState.Success).message ?: "Password reset email sent successfully!"
                     )
-                    // Navigate back after successful sign in
+                    // Navigate back after successful password reset request
                     navController.popBackStack()
                 }
                 is AuthState.Error -> {
                     Spacer(modifier = Modifier.height(16.dp))
-                    val errorState = authState as AuthState.Error
                     ErrorMessage(
-                        message = errorState.message,
+                        message = (authState as AuthState.Error).message,
                         onDismiss = { viewModel.clearError() }
                     )
-                    
-                    // Show additional help for email verification errors
-                    if (errorState.code == 17007) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        TextButton(
-                            onClick = { navController.navigate(NavRoutes.EmailVerification.route) }
-                        ) {
-                            Text(text = "Resend Verification Email")
-                        }
-                    }
                 }
                 else -> {
                     // Initial state - no message needed
@@ -161,21 +118,14 @@ fun SignInScreen(
             }
         }
 
-        // Sign Up link
+        // Back to Sign In link
         Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+        TextButton(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(
-                text = "Don't have an account?",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            TextButton(onClick = { navController.navigate(NavRoutes.SignUp.route) }) {
-                Text(text = "Sign Up")
-            }
+            Text(text = "Back to Sign In")
         }
     }
 } 

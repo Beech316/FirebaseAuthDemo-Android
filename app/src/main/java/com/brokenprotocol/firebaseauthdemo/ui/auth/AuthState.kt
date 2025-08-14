@@ -3,7 +3,7 @@ package com.brokenprotocol.firebaseauthdemo.ui.auth
 sealed class AuthState {
     object Initial : AuthState()
     object Loading : AuthState()
-    data class Success(val user: AuthUser) : AuthState()
+    data class Success(val user: AuthUser? = null, val message: String? = null) : AuthState()
     data class Error(val message: String, val code: Int? = null) : AuthState()
 }
 
