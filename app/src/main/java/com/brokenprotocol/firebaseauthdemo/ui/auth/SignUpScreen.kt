@@ -2,21 +2,19 @@ package com.brokenprotocol.firebaseauthdemo.ui.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.brokenprotocol.firebaseauthdemo.ui.components.PrimaryButton
+import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.ui.components.*
 
 @Composable
 fun SignUpScreen(
+    navController: NavController,
     onNavigateToSignIn: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -50,85 +48,65 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Create Account",
-            style = MaterialTheme.typography.headlineMedium
+        AuthHeader(
+            title = "Create Account",
+            onBackClick = { navController.popBackStack() }
         )
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
+        AuthTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            )
+            label = "Email",
+            keyboardOptions = AuthKeyboardOptions.Email
         )
 
-        OutlinedTextField(
+        AuthTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+            label = "Username",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
 
-        OutlinedTextField(
+        AuthTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = { Text("First Name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+            label = "First Name",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
 
-        OutlinedTextField(
+        AuthTextField(
             value = lastName,
             onValueChange = { lastName = it },
-            label = { Text("Last Name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+            label = "Last Name",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
 
-        OutlinedTextField(
+        AuthTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            )
+            label = "Password",
+            isPassword = true,
+            keyboardOptions = AuthKeyboardOptions.Password
         )
 
-        OutlinedTextField(
+        AuthTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            )
+            label = "Confirm Password",
+            isPassword = true,
+            keyboardOptions = AuthKeyboardOptions.Password
         )
 
         when (authState) {
             is AuthState.Loading -> {
-                CircularProgressIndicator()
+                LoadingSpinner(message = "Creating account...")
             }
             is AuthState.Error -> {
-                Text(
-                    text = (authState as AuthState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
+                ErrorMessage(
+                    message = (authState as AuthState.Error).message,
+                    onDismiss = { viewModel.clearError() }
                 )
             }
             else -> {}

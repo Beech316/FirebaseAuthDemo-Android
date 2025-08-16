@@ -2,19 +2,16 @@ package com.brokenprotocol.firebaseauthdemo.ui.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthViewModel
-import com.brokenprotocol.firebaseauthdemo.ui.components.PrimaryButton
+import com.brokenprotocol.firebaseauthdemo.ui.components.*
 import com.brokenprotocol.firebaseauthdemo.network.UserProfileData
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthState
 
@@ -62,78 +59,62 @@ fun EditProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Edit Profile",
-            style = MaterialTheme.typography.headlineMedium
+        AuthHeader(
+            title = "Edit Profile",
+            onBackClick = { navController.popBackStack() }
         )
         
+        Spacer(modifier = Modifier.height(16.dp))
+        
         // Username field
-        OutlinedTextField(
+        AuthTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            ),
+            label = "Username",
+            keyboardOptions = AuthKeyboardOptions.Text,
             isError = errorMessage != null
         )
         
         // First Name field
-        OutlinedTextField(
+        AuthTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = { Text("First Name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+            label = "First Name",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
         
         // Last Name field
-        OutlinedTextField(
+        AuthTextField(
             value = lastName,
             onValueChange = { lastName = it },
-            label = { Text("Last Name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
+            label = "Last Name",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
         
         // Phone Number field
-        OutlinedTextField(
+        AuthTextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
-            label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Done
-            )
+            label = "Phone Number",
+            keyboardOptions = AuthKeyboardOptions.Text
         )
         
         // Error message
         errorMessage?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
+            ErrorMessage(
+                message = error,
+                onDismiss = { errorMessage = null }
             )
         }
         
         // Success message
         successMessage?.let { success ->
-            Text(
-                text = success,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            SuccessMessage(message = success)
         }
         
         // Loading indicator
         if (isLoading) {
-            CircularProgressIndicator()
+            LoadingSpinner(message = "Updating profile...")
         }
         
         // Action buttons

@@ -139,6 +139,7 @@ fun MainScreen() {
             }
             composable(NavRoutes.SignUp.route) {
                 SignUpScreen(
+                    navController = navController,
                     onNavigateToSignIn = {
                         // Navigate to SignIn screen
                         navController.navigate(NavRoutes.SignIn.route)
