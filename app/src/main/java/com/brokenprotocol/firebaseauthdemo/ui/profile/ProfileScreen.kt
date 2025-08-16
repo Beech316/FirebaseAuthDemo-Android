@@ -28,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthViewModel
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthState
@@ -87,7 +89,7 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "User Information",
+                        text = stringResource(R.string.section_user_information),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -117,7 +119,7 @@ fun ProfileScreen(
                         TextButton(
                             onClick = { navController.navigate(NavRoutes.EmailVerification.route) }
                         ) {
-                            Text(text = "Verify Email")
+                            Text(text = stringResource(R.string.button_verify_email))
                         }
                     }
                 }
@@ -137,7 +139,7 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Actions",
+                        text = stringResource(R.string.section_actions),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -147,7 +149,7 @@ fun ProfileScreen(
                         onClick = { navController.navigate(NavRoutes.EditProfile.route) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "Edit Profile")
+                        Text(text = stringResource(R.string.button_edit_profile))
                     }
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -156,7 +158,7 @@ fun ProfileScreen(
                         onClick = { viewModel.signOut() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "Sign Out")
+                        Text(text = stringResource(R.string.button_sign_out))
                     }
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -168,20 +170,20 @@ fun ProfileScreen(
                             contentColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Text(text = "Delete Account")
+                        Text(text = stringResource(R.string.button_delete_account))
                     }
                 }
             }
         } ?: run {
             // User is not authenticated - show Sign In button (similar to AuthScreen)
             Text(
-                text = "Profile",
+                text = stringResource(R.string.profile_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
-                text = "Sign In",
+                text = stringResource(R.string.button_sign_in),
                 onClick = { 
                     // Navigate to Auth tab (index 2)
                     navController.navigate(NavRoutes.Auth.route) {
@@ -203,8 +205,8 @@ fun ProfileScreen(
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text("Delete Account") },
-            text = { Text("Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.") },
+            title = { Text(stringResource(R.string.dialog_delete_account_title)) },
+            text = { Text(stringResource(R.string.dialog_delete_account_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -217,14 +219,14 @@ fun ProfileScreen(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.button_delete))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteConfirmation = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.button_cancel))
                 }
             }
         )

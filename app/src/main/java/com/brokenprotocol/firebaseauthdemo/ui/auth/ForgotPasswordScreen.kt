@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthHeader
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthKeyboardOptions
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthTextField
@@ -45,7 +47,7 @@ fun ForgotPasswordScreen(
     ) {
         // Header with back button
         AuthHeader(
-            title = "Forgot Password",
+            title = stringResource(R.string.auth_forgot_password_title),
             onBackClick = { navController.popBackStack() }
         )
         
@@ -58,7 +60,7 @@ fun ForgotPasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Enter your email address and we'll send you a link to reset your password.",
+                text = stringResource(R.string.description_forgot_password),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -70,24 +72,27 @@ fun ForgotPasswordScreen(
                     email = it
                     emailError = null // Clear error when user types
                 },
-                label = "Email",
+                label = stringResource(R.string.label_email),
                 keyboardOptions = AuthKeyboardOptions.Email,
                 isError = emailError != null,
                 errorMessage = emailError
             )
             
             Spacer(modifier = Modifier.height(24.dp))
-            
+
+            val errorEmailRequired = stringResource(R.string.error_email_required)
+            val errorValidEmail = stringResource(R.string.error_invalid_email)
+
             PrimaryButton(
-                text = "Send Reset Link",
+                text = stringResource(R.string.button_send_reset_link),
                 onClick = { 
                     // Basic validation
                     if (email.isEmpty()) {
-                        emailError = "Email is required"
+                        emailError = errorEmailRequired
                         return@PrimaryButton
                     }
                     if (!email.contains("@")) {
-                        emailError = "Please enter a valid email address"
+                        emailError = errorValidEmail
                         return@PrimaryButton
                     }
                     viewModel.forgotPassword(email)
@@ -100,7 +105,7 @@ fun ForgotPasswordScreen(
                 is AuthState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
                     SuccessMessage(
-                        message = (authState as AuthState.Success).message ?: "Password reset email sent successfully!"
+                        message = (authState as AuthState.Error).message ?: stringResource(R.string.message_password_reset_sent)
                     )
                     // Navigate back after successful password reset request
                     navController.popBackStack()
@@ -125,7 +130,7 @@ fun ForgotPasswordScreen(
             onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(text = "Back to Sign In")
+            Text(text = stringResource(R.string.button_back_to_sign_in))
         }
     }
 } 

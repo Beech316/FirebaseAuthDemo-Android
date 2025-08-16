@@ -31,7 +31,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.brokenprotocol.firebaseauthdemo.ui.theme.FirebaseAuthDemoTheme
-import com.brokenprotocol.firebaseauthdemo.ui.explore.ExploreScreen
 import com.brokenprotocol.firebaseauthdemo.ui.profile.ProfileScreen
 import com.brokenprotocol.firebaseauthdemo.ui.profile.EditProfileScreen
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthScreen
@@ -76,7 +75,6 @@ fun MainScreen() {
     }
     
     val tabs = listOf(
-        Triple("Explore", Icons.Default.Home, NavRoutes.Explore.route),
         Triple("Profile", Icons.Default.AccountCircle, NavRoutes.Profile.route),
         Triple("Auth", Icons.Default.Lock, NavRoutes.Auth.route)
     )
@@ -110,12 +108,9 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.Explore.route,
+            startDestination = NavRoutes.Profile.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(NavRoutes.Explore.route) {
-                ExploreScreen(modifier = Modifier)
-            }
             composable(NavRoutes.Profile.route) {
                 ProfileScreen(
                     modifier = Modifier,

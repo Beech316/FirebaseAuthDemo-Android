@@ -1,3 +1,76 @@
 <resources>
     <string name="app_name">Firebase Auth Demo</string>
+    
+    <!-- Authentication -->
+    <string name="auth_title">Authentication</string>
+    <string name="auth_sign_in_title">Sign In</string>
+    <string name="auth_sign_up_title">Create Account</string>
+    <string name="auth_forgot_password_title">Forgot Password</string>
+    <string name="auth_email_verification_title">Email Verification</string>
+    <string name="auth_edit_profile_title">Edit Profile</string>
+    
+    <!-- Form Labels -->
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_confirm_password">Confirm Password</string>
+    <string name="label_username">Username</string>
+    <string name="label_first_name">First Name</string>
+    <string name="label_last_name">Last Name</string>
+    <string name="label_phone_number">Phone Number</string>
+    
+    <!-- Buttons -->
+    <string name="button_sign_in">Sign In</string>
+    <string name="button_sign_up">Sign Up</string>
+    <string name="button_sign_out">Sign Out</string>
+    <string name="button_save">Save</string>
+    <string name="button_back">Back</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_verify_email">Verify Email</string>
+    <string name="button_forgot_password">Forgot Password?</string>
+    <string name="button_resend_verification_email">Resend Verification Email</string>
+    <string name="button_send_reset_link">Send Reset Link</string>
+    <string name="button_back_to_sign_in">Back to Sign In</string>
+    <string name="button_check_verification_status">Check Verification Status</string>
+    <string name="button_edit_profile">Edit Profile</string>
+    <string name="button_delete_account">Delete Account</string>
+    
+    <!-- Messages -->
+    <string name="message_sign_in_successful">Sign in successful! Returning to main screen...</string>
+    <string name="message_authentication_successful">Authentication successful!</string>
+    <string name="message_creating_account">Creating account...</string>
+    <string name="message_updating_profile">Updating profile...</string>
+    <string name="message_signing_in">Signing in...</string>
+    <string name="message_signing_out">Signing out...</string>
+    <string name="message_password_reset_sent">Password reset email sent successfully!</string>
+    <string name="message_operation_completed">Operation completed successfully!</string>
+    
+    <!-- Error Messages -->
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    
+    <!-- Descriptions -->
+    <string name="description_forgot_password">Enter your email address and we\'ll send you a link to reset your password.</string>
+    <string name="description_email_verification">Check your email verification status or resend verification email.</string>
+    
+    <!-- Section Titles -->
+    <string name="section_user_information">User Information</string>
+    <string name="section_actions">Actions</string>
+    
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_welcome">Welcome, %s!</string>
+    
+    <!-- Dialog -->
+    <string name="dialog_delete_account_title">Delete Account</string>
+    <string name="dialog_delete_account_message">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</string>
+    
+    <!-- Text -->
+    <string name="text_dont_have_account">Don\'t have an account?</string>
+    <string name="text_already_have_account">Already have an account? Sign In</string>
+    <string name="text_current_user">Current user: %s</string>
+    
+    <!-- Explore -->
+    <string name="explore_title">Explore Screen</string>
 </resources>

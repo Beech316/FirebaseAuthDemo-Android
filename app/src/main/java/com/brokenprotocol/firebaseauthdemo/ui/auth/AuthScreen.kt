@@ -15,7 +15,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import com.brokenprotocol.firebaseauthdemo.ui.components.ErrorMessage
 import com.brokenprotocol.firebaseauthdemo.ui.components.LoadingSpinner
@@ -41,31 +43,31 @@ fun AuthScreen(
         if (currentUser != null) {
             // User is authenticated - show Sign Out
             Text(
-                text = "Welcome, ${currentUser!!.email}!",
+                text = stringResource(R.string.profile_welcome, currentUser!!.email),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
-                text = "Sign Out",
+                text = stringResource(R.string.button_sign_out),
                 onClick = { viewModel.signOut() },
                 loading = authState is AuthState.Loading
             )
         } else {
             // User is not authenticated - show Sign In and Sign Up
             Text(
-                text = "Authentication",
+                text = stringResource(R.string.auth_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton(
-                text = "Sign In",
+                text = stringResource(R.string.button_sign_in),
                 onClick = { navController.navigate(NavRoutes.SignIn.route) }
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
-                text = "Sign Up",
+                text = stringResource(R.string.button_sign_up),
                 onClick = { navController.navigate(NavRoutes.SignUp.route) }
             )
         }
@@ -75,13 +77,13 @@ fun AuthScreen(
             is AuthState.Loading -> {
                 Spacer(modifier = Modifier.height(16.dp))
                 LoadingSpinner(
-                    message = if (currentUser != null) "Signing out..." else "Signing in..."
+                    message = if (currentUser != null) stringResource(R.string.message_signing_out) else stringResource(R.string.message_signing_in)
                 )
             }
             is AuthState.Success -> {
                 Spacer(modifier = Modifier.height(16.dp))
                 SuccessMessage(
-                    message = "Authentication successful!"
+                    message = stringResource(R.string.message_authentication_successful)
                 )
             }
             is AuthState.Error -> {

@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.ui.auth.AuthViewModel
 import com.brokenprotocol.firebaseauthdemo.ui.components.*
 import com.brokenprotocol.firebaseauthdemo.network.UserProfileData
@@ -60,7 +62,7 @@ fun EditProfileScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AuthHeader(
-            title = "Edit Profile",
+            title = stringResource(R.string.auth_edit_profile_title),
             onBackClick = { navController.popBackStack() }
         )
         
@@ -70,7 +72,7 @@ fun EditProfileScreen(
         AuthTextField(
             value = username,
             onValueChange = { username = it },
-            label = "Username",
+            label = stringResource(R.string.label_username),
             keyboardOptions = AuthKeyboardOptions.Text,
             isError = errorMessage != null
         )
@@ -79,7 +81,7 @@ fun EditProfileScreen(
         AuthTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = "First Name",
+            label = stringResource(R.string.label_first_name),
             keyboardOptions = AuthKeyboardOptions.Text
         )
         
@@ -87,7 +89,7 @@ fun EditProfileScreen(
         AuthTextField(
             value = lastName,
             onValueChange = { lastName = it },
-            label = "Last Name",
+            label = stringResource(R.string.label_last_name),
             keyboardOptions = AuthKeyboardOptions.Text
         )
         
@@ -95,7 +97,7 @@ fun EditProfileScreen(
         AuthTextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
-            label = "Phone Number",
+            label = stringResource(R.string.label_phone_number),
             keyboardOptions = AuthKeyboardOptions.Text
         )
         
@@ -114,7 +116,7 @@ fun EditProfileScreen(
         
         // Loading indicator
         if (isLoading) {
-            LoadingSpinner(message = "Updating profile...")
+            LoadingSpinner(message = stringResource(R.string.message_updating_profile))
         }
         
         // Action buttons
@@ -127,7 +129,7 @@ fun EditProfileScreen(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.button_cancel))
             }
             
             // Save button
@@ -149,7 +151,7 @@ fun EditProfileScreen(
                 },
                 modifier = Modifier.weight(1f),
                 enabled = !isLoading && username.isNotBlank() && firstName.isNotBlank() && lastName.isNotBlank(),
-                text = "Save",
+                text = stringResource(R.string.button_save),
                 loading = false
             )
         }

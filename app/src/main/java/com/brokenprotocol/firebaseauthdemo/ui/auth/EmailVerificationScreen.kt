@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthHeader
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthTextField
 import com.brokenprotocol.firebaseauthdemo.ui.components.ErrorMessage
@@ -45,7 +47,7 @@ fun EmailVerificationScreen(
     ) {
         // Header with back button
         AuthHeader(
-            title = "Email Verification",
+            title = stringResource(R.string.auth_email_verification_title),
             onBackClick = { navController.popBackStack() }
         )
         
@@ -58,7 +60,7 @@ fun EmailVerificationScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Check your email verification status or resend verification email.",
+                text = stringResource(R.string.description_email_verification),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
@@ -68,7 +70,7 @@ fun EmailVerificationScreen(
             val userEmail = currentUser?.email ?: ""
             if (userEmail.isNotEmpty()) {
                 Text(
-                    text = "Current user: $userEmail",
+                    text = stringResource(R.string.text_current_user, userEmail),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -80,24 +82,27 @@ fun EmailVerificationScreen(
                     email = it
                     emailError = null // Clear error when user types
                 },
-                label = "Email",
+                label = stringResource(R.string.label_email),
                 isError = emailError != null,
                 errorMessage = emailError
             )
             
             Spacer(modifier = Modifier.height(24.dp))
+
+            val errorEmailRequired = stringResource(R.string.error_email_required)
+            val errorValidEmail = stringResource(R.string.error_invalid_email)
             
             // Check verification status button
             PrimaryButton(
-                text = "Check Verification Status",
+                text = stringResource(R.string.button_check_verification_status),
                 onClick = { 
                     val emailToUse = email.ifEmpty { userEmail }
                     if (emailToUse.isEmpty()) {
-                        emailError = "Email is required"
+                        emailError = errorEmailRequired
                         return@PrimaryButton
                     }
                     if (!emailToUse.contains("@")) {
-                        emailError = "Please enter a valid email address"
+                        emailError = errorValidEmail
                         return@PrimaryButton
                     }
                     
@@ -116,15 +121,15 @@ fun EmailVerificationScreen(
             
             // Resend verification email button
             PrimaryButton(
-                text = "Resend Verification Email",
+                text = stringResource(R.string.button_resend_verification_email),
                 onClick = { 
                     val emailToUse = email.ifEmpty { userEmail }
                     if (emailToUse.isEmpty()) {
-                        emailError = "Email is required"
+                        emailError = errorEmailRequired
                         return@PrimaryButton
                     }
                     if (!emailToUse.contains("@")) {
-                        emailError = "Please enter a valid email address"
+                        emailError = errorValidEmail
                         return@PrimaryButton
                     }
                     viewModel.resendVerificationEmail(emailToUse)
@@ -137,7 +142,7 @@ fun EmailVerificationScreen(
                 is AuthState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
                     SuccessMessage(
-                        message = (authState as AuthState.Success).message ?: "Operation completed successfully!"
+                        message = (authState as AuthState.Success).message ?: stringResource(R.string.message_operation_completed)
                     )
                 }
                 is AuthState.Error -> {
@@ -160,7 +165,7 @@ fun EmailVerificationScreen(
             onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(text = "Back")
+            Text(text = stringResource(R.string.button_back))
         }
     }
 } 

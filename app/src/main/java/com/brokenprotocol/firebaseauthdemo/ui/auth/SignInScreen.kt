@@ -21,7 +21,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.navigation.NavRoutes
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthHeader
 import com.brokenprotocol.firebaseauthdemo.ui.components.AuthKeyboardOptions
@@ -49,7 +51,7 @@ fun SignInScreen(
     ) {
         // Header with back button
         AuthHeader(
-            title = "Sign In",
+            title = stringResource(R.string.auth_sign_in_title),
             onBackClick = { navController.popBackStack() }
         )
         
@@ -67,7 +69,7 @@ fun SignInScreen(
                     email = it
                     emailError = null // Clear error when user types
                 },
-                label = "Email",
+                label = stringResource(R.string.label_email),
                 keyboardOptions = AuthKeyboardOptions.Email,
                 isError = emailError != null,
                 errorMessage = emailError
@@ -81,7 +83,7 @@ fun SignInScreen(
                     password = it
                     passwordError = null // Clear error when user types
                 },
-                label = "Password",
+                label = stringResource(R.string.label_password),
                 isPassword = true,
                 keyboardOptions = AuthKeyboardOptions.Password,
                 isError = passwordError != null,
@@ -98,28 +100,31 @@ fun SignInScreen(
                 TextButton(
                     onClick = { navController.navigate(NavRoutes.EmailVerification.route) }
                 ) {
-                    Text(text = "Verify Email")
+                    Text(text = stringResource(R.string.button_verify_email))
                 }
                 
                 TextButton(
                     onClick = { navController.navigate(NavRoutes.ForgotPassword.route) }
                 ) {
-                    Text(text = "Forgot Password?")
+                    Text(text = stringResource(R.string.button_forgot_password))
                 }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
-            
+
+            val errorEmailRequired = stringResource(R.string.error_email_required)
+            val errorPasswordRequired = stringResource(R.string.error_password_required)
+
             PrimaryButton(
-                text = "Sign In",
+                text = stringResource(R.string.button_sign_in),
                 onClick = { 
                     // Basic validation
                     if (email.isEmpty()) {
-                        emailError = "Email is required"
+                        emailError = errorEmailRequired
                         return@PrimaryButton
                     }
                     if (password.isEmpty()) {
-                        passwordError = "Password is required"
+                        passwordError = errorPasswordRequired
                         return@PrimaryButton
                     }
                     viewModel.signIn(email, password)
@@ -132,7 +137,7 @@ fun SignInScreen(
                 is AuthState.Success -> {
                     Spacer(modifier = Modifier.height(16.dp))
                     SuccessMessage(
-                        message = "Sign in successful! Returning to main screen..."
+                        message = stringResource(R.string.message_sign_in_successful)
                     )
                     // Navigate back after successful sign in
                     navController.popBackStack()
@@ -151,7 +156,7 @@ fun SignInScreen(
                         TextButton(
                             onClick = { navController.navigate(NavRoutes.EmailVerification.route) }
                         ) {
-                            Text(text = "Resend Verification Email")
+                            Text(text = stringResource(R.string.button_resend_verification_email))
                         }
                     }
                 }
@@ -169,12 +174,12 @@ fun SignInScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Don't have an account?",
+                text = stringResource(R.string.text_dont_have_account),
                 style = MaterialTheme.typography.bodyLarge
             )
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = { navController.navigate(NavRoutes.SignUp.route) }) {
-                Text(text = "Sign Up")
+                Text(text = stringResource(R.string.button_sign_up))
             }
         }
     }

@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.brokenprotocol.firebaseauthdemo.R
 import com.brokenprotocol.firebaseauthdemo.ui.components.*
 
 @Composable
@@ -49,7 +51,7 @@ fun SignUpScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AuthHeader(
-            title = "Create Account",
+            title = stringResource(R.string.auth_sign_up_title),
             onBackClick = { navController.popBackStack() }
         )
         
@@ -58,35 +60,35 @@ fun SignUpScreen(
         AuthTextField(
             value = email,
             onValueChange = { email = it },
-            label = "Email",
+            label = stringResource(R.string.label_email),
             keyboardOptions = AuthKeyboardOptions.Email
         )
 
         AuthTextField(
             value = username,
             onValueChange = { username = it },
-            label = "Username",
+            label = stringResource(R.string.label_username),
             keyboardOptions = AuthKeyboardOptions.Text
         )
 
         AuthTextField(
             value = firstName,
             onValueChange = { firstName = it },
-            label = "First Name",
+            label = stringResource(R.string.label_first_name),
             keyboardOptions = AuthKeyboardOptions.Text
         )
 
         AuthTextField(
             value = lastName,
             onValueChange = { lastName = it },
-            label = "Last Name",
+            label = stringResource(R.string.label_last_name),
             keyboardOptions = AuthKeyboardOptions.Text
         )
 
         AuthTextField(
             value = password,
             onValueChange = { password = it },
-            label = "Password",
+            label = stringResource(R.string.label_password),
             isPassword = true,
             keyboardOptions = AuthKeyboardOptions.Password
         )
@@ -94,14 +96,14 @@ fun SignUpScreen(
         AuthTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = "Confirm Password",
+            label = stringResource(R.string.label_confirm_password),
             isPassword = true,
             keyboardOptions = AuthKeyboardOptions.Password
         )
 
         when (authState) {
             is AuthState.Loading -> {
-                LoadingSpinner(message = "Creating account...")
+                LoadingSpinner(message = stringResource(R.string.message_creating_account))
             }
             is AuthState.Error -> {
                 ErrorMessage(
@@ -129,14 +131,14 @@ fun SignUpScreen(
                     confirmPassword.isNotBlank() && username.isNotBlank() &&
                     firstName.isNotBlank() && lastName.isNotBlank() &&
                     password == confirmPassword,
-            text = "Sign Up",
+            text = stringResource(R.string.button_sign_up),
             loading = false
         )
 
         TextButton(
             onClick = onNavigateToSignIn
         ) {
-            Text("Already have an account? Sign In")
+            Text(stringResource(R.string.text_already_have_account))
         }
     }
 } 
